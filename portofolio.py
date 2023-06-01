@@ -5,22 +5,16 @@ import pandas as pd
 
 # Konfigurasi awal streamlit
 st.set_page_config(
-    page_title = 'FSB - Final Project', 
-    page_icon = '🐧', 
+    page_title = 'Hafiz Akhyar - Portofolio', 
+    page_icon = '👨🏻', 
     layout = "wide"
 )
 
-# Pembacaan teks 
-def read_text(filename):
-    with open(filename) as file:
-        grades = file.read()
-    return(grades)
-
 # Ekstrak data & cleansing
 @st.cache_resource
-def ekstrak_data():
+def ekstrak_data(url_data):
     #Ekstraksi data
-    raw_data = pd.read_csv('D:/Full Stack Bangalore/telecom_customer_churn.csv')
+    raw_data = pd.read_csv(url_data)
 
     # Copy data ke variabel baru
     data = raw_data.copy()
@@ -35,20 +29,31 @@ def ekstrak_data():
     return (data)
 
 # Ornamen pada header
+@st.cache_resource
 def header():
     spacer1, row1, spacer2 = st.columns([0.1, 7.2, 0.1])
     
     row1.title('Telco Churn Analysis')
-    row1.subheader('Streamlit App by [Bachtiyar M. Arief](https://www.linkedin.com/in/bachtiyarma/)')
+    row1.subheader('Streamlit App by [Hafiz Akhyar](https://www.linkedin.com/in/hafiz-akhyar-218669158/?originalSubdomain=id)')
     
     row1.header('Latar Belakang')
     
-    teks_header = read_text('D:/Full Stack Bangalore/1. Abstrak.txt')
-    row1.markdown(
-        teks_header, 
+    row1.markdown("""
+        Customer Churn adalah persentase pelanggan yang meninggalkan bisnis atau berhenti menggunakan layanan. 
+        Tingkat churn dihitung berdasarkan jumlah pelanggan yang meninggalkan bisnis Anda dalam waktu tertentu. 
+        Customer churn penting untuk diketahui bisnis karena merupakan gambaran keberhasilan perusahaan dalam mempertahankan pelanggan.<br>
+
+        <b>Telco Bangalore</b> merupakan perusahaan (fiktif) dibidang telekomunikasi yang tidak hanya menyediakan jasa layanan telepon, 
+        namun juga berkembang menyediakan jasa layanan Internet yang aman dan terjamin kualitasnya, <i>streaming</i> TV/Movies/Music dan layanan lainnya.
+        Walaupun layanan yang disajikan oleh perusahaan ini terbilang menjanjikan, namun tidak menutup kemungkinan akan 
+        selalu ada customer yang akhirnya berhenti berlangganan (<i>churn</i>). Banyak faktor yang mengakibatkan hal ini terjadi, untuk itu perlu bagi
+        perusahaan menganalisa faktor apa saja yang menyebabkan pelanggan akhirnya memutuskan untuk berhenti berlangganan sehingga perusahaan
+        dapat membuat suatu kebijakan berlandaskan analisa data agar dapat mempertahankan pelanggan berharganya.<br>
+        """, 
         unsafe_allow_html = True
     )
-        
+
+@st.cache_resource       
 def tampilkan_data(data):
     spacer1, row1, spacer2 = st.columns([0.1, 7.2, 0.1])
     row1.header('Data')
@@ -72,6 +77,7 @@ def tampilkan_data(data):
     row4.dataframe(data)
 
 # Hitung banyak customer yang dikelompokkan berdasarkan status
+@st.cache_resource
 def perhitungan_customer_status(data):
     # Hitung total data (unik) customer id per status customernya
     cust_status = data.groupby(['customer_status'], as_index = False).agg(total_cust_status = ('customer_id', pd.Series.nunique))
@@ -112,6 +118,7 @@ def perhitungan_customer_status(data):
 
     return (cust_status, fig)
 
+@st.cache_resource
 def tampilkan_status_customer(data):
     
     spacer1, row1, spacer2 = st.columns([0.1, 7.2, 0.1])
@@ -144,6 +151,7 @@ def tampilkan_status_customer(data):
         unsafe_allow_html = True                               
     )
 
+@st.cache_resource
 def perhitungan_churn_reason(data):
     
     # Hitung total data cust
@@ -211,6 +219,7 @@ def perhitungan_churn_reason(data):
 
     return(cust_churn_category, fig)
 
+@st.cache_resource
 def tampilkan_alasan_churn(data):
     spacer1, row1, spacer2 = st.columns([0.1, 7.2, 0.1])
     row1.header('Alasan Customer Churn?')
@@ -265,6 +274,7 @@ def text_graph(text1, text2, color):
     
     return fig 
 
+@st.cache_resource
 def tampilkan_revenue_impact(data):
     # Hitung total data (unik) customer id per status customernya
     revenue_per_status = data.groupby(['customer_status'], as_index = False).agg(total_revenue = ('total_revenue', pd.Series.sum))
@@ -309,17 +319,10 @@ def tampilkan_revenue_impact(data):
         Sehingga dengan melihat ketakseimbangan pendapatan yang terjadi perlu menjadi perhatian besar terkait penyebab customer tidak lagi berlangganan, sehingga dampak yang
         lebih besar yang mungkin akan terjadi dapat diminimalkan resikonya.
         """, 
-        unsafe_allow_html = True)
+        unsafe_allow_html = True
+    )
 
 # All Demografi
-def img_to_html(img_path):
-    img_bytes = Path(img_path).read_bytes()
-    encoded = base64.b64encode(img_bytes).decode()
-    img_html = "<img src='data:image/png;base64,{}' class='img-fluid' width='250' height='250'>".format(
-      encoded
-    )
-    return img_html
-
 def count_per_gender(data):
     count_data_per_gender = data.groupby(['gender'], as_index = False).agg(count_data_per_gender = ('customer_id', pd.Series.nunique))
     count_male_data = count_data_per_gender[count_data_per_gender['gender'] == 'Male']['count_data_per_gender'].values[0]
@@ -341,8 +344,8 @@ def distribusi_umur(data, gender, color):
         bargap = 0.02,
         showlegend = False,
         xaxis = dict(
-            title = "age",
-            zeroline=False,
+            title = f"Distribusi Usia Pelanggan<br>{gender}",
+            zeroline = False,
             showgrid = False
         ),
         yaxis = dict(
@@ -392,22 +395,103 @@ def married_status(data, gender, color):
         height = 400,
         showlegend = False,
         plot_bgcolor = 'rgba(0, 0, 0, 0)',
+        paper_bgcolor = 'rgba(0, 0, 0, 0)',
+        annotations=[
+            dict(
+                text = 'Married<br>Status', 
+                x = 0.5, 
+                y =0.5, 
+                font_size=20, 
+                showarrow=False
+            )
+        ]
+    )
+    
+    fig.update_annotations(
+        font = dict(
+            family = "sans serif", 
+            color = color[0]
+        )
+    )
+                 
+    return (fig)
+
+def contract_type(data, gender):
+    
+    data = data[data['gender'] == gender]
+    data['internet_type'] = data['internet_type'].fillna('No Internet Service')
+    internet_type_per_gender = data.groupby(['contract', 'internet_type'], as_index = False).agg(total_cust_per_internet_type = ('customer_id', pd.Series.nunique))
+ 
+    if(gender == 'Male'):
+        color_internet_type = {
+            '(?)':'#9FFFCB',
+            'Fiber Optic' : '#32CD32',
+            'Cable' : '#93DC5C',
+            'DSL' : '#B7E892',
+            'No Internet Service' : '#21D375'                              
+        }
+    else:
+        color_internet_type = {
+            '(?)':'#93E9BE',
+            'Fiber Optic' : '#3A5A40',
+            'Cable' : '#588157',
+            'DSL' : '#5A9F68',
+            'No Internet Service' : '#BBD58E'                              
+        }
+        
+    fig = px.treemap(
+        internet_type_per_gender, 
+        path = [
+            px.Constant('Contract Type'),
+            'contract',
+            'internet_type'
+        ], 
+        values = 'total_cust_per_internet_type',
+        color = 'internet_type',
+        color_discrete_map = color_internet_type,
+        title = f'Contract Status and Internet Type of <br>{gender}'
+    )
+
+    fig.update_layout(
+        autosize = False,
+        width = 525,
+        height = 425,
+        showlegend = False,
+        xaxis = dict(
+            title = f"Distribusi Usia Pelanggan<br>{gender}"
+        ),
+        plot_bgcolor = 'rgba(0, 0, 0, 0)',
         paper_bgcolor = 'rgba(0, 0, 0, 0)'
+    )
+
+    fig.update_traces(
+        marker = dict(cornerradius = 5)
     )
     
     return (fig)
-
     
-def tampilkan_demografi(data):
+    
+def tampilkan_demografi(data, url_img_man, url_img_woman):
     male_color, female_color = '#fbe280', '#5bbc95'
     
     spacer1, row1, spacer2 = st.columns([0.1, 7.2, 0.1])
     row1.header('Demografi Customer Berdasarkan Status')
-    status = row1.multiselect(
-        label = 'Pilih Status Customers',
-        options = data['customer_status'].unique(),
-        default = 'Churned'
-    )
+    
+    with row1:
+        st.markdown(f"""
+            Dalam dunia bisnis yang semakin kompetitif, pemahaman mendalam tentang pelanggan merupakan kunci keberhasilan. Setiap perusahaan tentu berharap
+            untuk dapat meningkatkan pemahaman tentang segmentasi pelanggan, memperkuat strategi pemasaran dan memberikan pengalaman yang lebih personal dan relevan bagi 
+            setiap pelanggan. Sehingga penting bagi perusahaan untuk memfokuskan perhatian utamanya pada pelanggan berdasakan gender (jenis kelamin) dan status pelanggan saat ini.
+            Tentu hal ini perlu perusahaan ketahui untuk dapat meningkatkan produk maupun layanannya namun dengan segmentasi yang lebih personal berdasarkan gender dan mengetahui jenis 
+            kebutuhannya
+            """, 
+            unsafe_allow_html = True
+        )
+        status = st.multiselect(
+            label = 'Pilih Status Customers',
+            options = data['customer_status'].unique(),
+            default = 'Stayed'
+        )
     
     filter_data = data.loc[data['customer_status'].isin(status)]
 
@@ -418,71 +502,101 @@ def tampilkan_demografi(data):
     fig_pie_married_male = married_status(filter_data, gender = 'Male', color = ('#bfac60', male_color))
     fig_pie_married_female = married_status(filter_data, gender = 'Female', color = ('#469173', female_color))
     
+    fig_treemap_male = contract_type(filter_data, gender = 'Male')
+    fig_treemap_female = contract_type(filter_data, gender = 'Female')
+    
     spacer1, row2, spacer, row3, spacer3 = st.columns([0.1, 3, 0.5, 3, 0.1])
-    row2.markdown(
-        f"<p style='text-align: center; color: {male_color}; font-size : 350%;'> Male </p>", 
-        unsafe_allow_html = True
-    )
-    
-    row2.markdown(
-        "<p style='text-align: center;'>" + img_to_html('D:\Full Stack Bangalore\man.png') + "</p>", 
-        unsafe_allow_html = True
-    )
-    
-    row2.markdown(
-        f"<p style='text-align: center; color: {male_color}; font-size : 350%;'> {count_male_data} </p>", 
-        unsafe_allow_html = True
-    )
-    
-    row2.markdown(
-        f"<p style='text-align: center; color: {male_color}; font-size : 150%;'> ({', '.join(status)}) </p>", 
-        unsafe_allow_html = True
-    )
-    
-    row2.plotly_chart(
-        fig_hist_male, 
-        use_container_width = False
-    )
-    row2.plotly_chart(
-        fig_pie_married_male, 
-        use_container_width = False
-    )
-    
-    row3.markdown(
-        f"<p style='text-align: center; color: {female_color}; font-size : 350%;'> Female </p>", 
-        unsafe_allow_html = True
-    )
-    row3.markdown(
-        "<p style='text-align: center;'>" + img_to_html('D:\Full Stack Bangalore\woman.png') + "</p>", 
-        unsafe_allow_html = True
-    )
-    row3.markdown(
-        f"<p style='text-align: center; color: {female_color}; font-size : 350%;'> {count_female_data} </p>", 
-        unsafe_allow_html = True
-    )
-    row3.markdown(
-        f"<p style='text-align: center; color: {female_color}; font-size : 150%;'> ({', '.join(status)}) </p>", 
-        unsafe_allow_html = True
-    )
+    with row2:
+        st.markdown(
+            f"<p style='text-align: center; color: {male_color}; font-size : 350%;'> Male </p>", 
+            unsafe_allow_html = True
+        )
+        
+        st.markdown(f"""
+            <p style='text-align: center;'> 
+                <img src='{url_img_man}' width="250" height="250"> 
+            </p>
+            """, 
+            unsafe_allow_html = True
+        )
+        
+        st.markdown(
+            f"<p style='text-align: center; color: {male_color}; font-size : 350%;'> {count_male_data} </p>", 
+            unsafe_allow_html = True
+        )
+        
+        st.markdown(
+            f"<p style='text-align: center; color: {male_color}; font-size : 150%;'> ({', '.join(status)}) </p>", 
+            unsafe_allow_html = True
+        )
+        
+        st.plotly_chart(
+            fig_hist_male, 
+            use_container_width = False
+        )
+        
+        st.plotly_chart(
+            fig_pie_married_male, 
+            use_container_width = False
+        )
+        
+        st.plotly_chart(
+            fig_treemap_male, 
+            use_container_width = False
+        )
+        
+    with row3:        
+        st.markdown(
+            f"<p style='text-align: center; color: {female_color}; font-size : 350%;'> Female </p>", 
+            unsafe_allow_html = True
+        )
+        
+        st.markdown(f"""
+            <p style='text-align: center;'> 
+                <img src='{url_img_woman}' width="250" height="250"> 
+            </p>
+            """, 
+            unsafe_allow_html = True
+        )
+        
+        st.markdown(
+            f"<p style='text-align: center; color: {female_color}; font-size : 350%;'> {count_female_data} </p>", 
+            unsafe_allow_html = True
+        )
+        
+        st.markdown(
+            f"<p style='text-align: center; color: {female_color}; font-size : 150%;'> ({', '.join(status)}) </p>", 
+            unsafe_allow_html = True
+        )
 
-    row3.plotly_chart(
-        fig_hist_female, 
-        use_container_width = False
-    )
-    
-    row3.plotly_chart(
-        fig_pie_married_female, 
-        use_container_width = False
-    )
+        st.plotly_chart(
+            fig_hist_female, 
+            use_container_width = False
+        )
+        
+        st.plotly_chart(
+            fig_pie_married_female, 
+            use_container_width = False
+        )
+        
+        st.plotly_chart(
+            fig_treemap_female, 
+            use_container_width = False
+        )
     
     
 if __name__ == "__main__":
     header()
     
-    data = ekstrak_data()
+    url_data = 'https://raw.githubusercontent.com/bachtiyararif/Final-Project-FSB/main/telecom_customer_churn.csv'
+    data = ekstrak_data(url_data)
     
     tampilkan_data(data)
     tampilkan_status_customer(data)
     tampilkan_alasan_churn(data)
     tampilkan_revenue_impact(data)
-    tampilkan_demografi(data)
+    
+    url_img_man = 'https://raw.githubusercontent.com/bachtiyararif/Final-Project-FSB/main/man.png'
+    url_img_woman = 'https://raw.githubusercontent.com/bachtiyararif/Final-Project-FSB/main/woman.png'
+    
+    tampilkan_demografi(data, url_img_man, url_img_woman)
