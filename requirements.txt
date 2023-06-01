@@ -1,4 +1,4 @@
 pandas
-pyplot
+plotly
 streamlit
 matplotlib
