@@ -596,7 +596,7 @@ if __name__ == "__main__":
     tampilkan_alasan_churn(data)
     tampilkan_revenue_impact(data)
     
-    url_img_man = 'https://raw.githubusercontent.com/bachtiyararif/Final-Project-FSB/main/man.png'
-    url_img_woman = 'https://raw.githubusercontent.com/bachtiyararif/Final-Project-FSB/main/woman.png'
+    url_img_man = 'https://raw.githubusercontent.com/hafizakhyar/customer-churn-telco/main/man.png'
+    url_img_woman = 'https://raw.githubusercontent.com/hafizakhyar/customer-churn-telco/main/woman.png'
     
     tampilkan_demografi(data, url_img_man, url_img_woman)
