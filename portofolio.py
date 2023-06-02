@@ -588,7 +588,7 @@ def tampilkan_demografi(data, url_img_man, url_img_woman):
 if __name__ == "__main__":
     header()
     
-    url_data = 'https://raw.githubusercontent.com/bachtiyararif/Final-Project-FSB/main/telecom_customer_churn.csv'
+    url_data = 'https://raw.githubusercontent.com/hafizakhyar/customer-churn-telco/main/telecom_customer_churn.csv'
     data = ekstrak_data(url_data)
     
     tampilkan_data(data)
